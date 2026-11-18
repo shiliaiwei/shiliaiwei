@@ -1,0 +1,74 @@
+name: Update Chess.com profile
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 6 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update-profile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Fetch and render profile
+        env:
+          PROFILE_URL: https://api.chess.com/pub/player/visrie
+        run: |
+          set -euo pipefail
+          profile="$(curl --fail --silent --show-error --retry 3 -A "github-actions" "$PROFILE_URL")"
+          jq -e '.username' >/dev/null <<<"$profile"
+
+          export PROFILE_JSON="$profile"
+          python - <<'PY'
+          import json
+          import os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          profile = json.loads(os.environ["PROFILE_JSON"])
+
+          def value(key, default="Not provided"):
+              item = profile.get(key)
+              return item if item not in (None, "") else default
+
+          def date_value(key):
+              item = profile.get(key)
+              if not item:
+                  return "Not provided"
+              return datetime.fromtimestamp(item, tz=timezone.utc).strftime("%Y-%m-%d")
+
+          username = value("username")
+          state = f'''<!-- chess-profile:start -->
+          ### {username}
+
+          <table>
+          <tr><td><strong>Status</strong></td><td>{value("status")}</td></tr>
+          <tr><td><strong>Joined</strong></td><td>{date_value("joined")}</td></tr>
+          <tr><td><strong>Last online</strong></td><td>{date_value("last_online")}</td></tr>
+          <tr><td><strong>Followers</strong></td><td>{value("followers")}</td></tr>
+          <tr><td><strong>League</strong></td><td>{value("league")}</td></tr>
+          <tr><td><strong>Country</strong></td><td><a href="{value("country", "https://www.chess.com")}">Chess.com profile</a></td></tr>
+          </table>
+
+          [Open the live {username} profile](https://www.chess.com/member/{username}) · Updated {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}
+          <!-- chess-profile:end -->'''
+
+          readme = Path("readme.md")
+          content = readme.read_text()
+          start = content.index("<!-- chess-profile:start -->")
+          end = content.index("<!-- chess-profile:end -->") + len("<!-- chess-profile:end -->")
+          readme.write_text(content[:start] + state.strip() + content[end:])
+          PY
+
+      - name: Commit rendered profile
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add readme.md
+          git diff --cached --quiet || git commit -m "Update Chess.com profile data"
+          git push
