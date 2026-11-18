@@ -8,7 +8,13 @@
 
 [![Chess.com profile](https://img.shields.io/badge/Chess.com-visrie-769656?logo=chessdotcom&logoColor=white)](https://api.chess.com/pub/player/visrie)
 
-[View the live `visrie` profile JSON](https://api.chess.com/pub/player/visrie)
+<!-- chess-profile:start -->
+### visrie
+
+The live profile card will be populated by the scheduled GitHub Actions workflow.
+
+[Open the live `visrie` profile](https://www.chess.com/member/visrie)
+<!-- chess-profile:end -->
 
 ## GitHub Metrics
 
