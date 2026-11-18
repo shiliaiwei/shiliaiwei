@@ -11,9 +11,16 @@
 <!-- chess-profile:start -->
 ### visrie
 
-The live profile card will be populated by the scheduled GitHub Actions workflow.
+<table>
+<tr><td><strong>Status</strong></td><td>premium</td></tr>
+<tr><td><strong>Joined</strong></td><td>2025-06-07</td></tr>
+<tr><td><strong>Last online</strong></td><td>2026-11-18</td></tr>
+<tr><td><strong>Followers</strong></td><td>4</td></tr>
+<tr><td><strong>League</strong></td><td>Champion</td></tr>
+<tr><td><strong>Country</strong></td><td><a href="https://api.chess.com/pub/country/KH">Chess.com profile</a></td></tr>
+</table>
 
-[Open the live `visrie` profile](https://www.chess.com/member/visrie)
+[Open the live visrie profile](https://www.chess.com/member/visrie) · Updated 2026-11-18 11:35 UTC
 <!-- chess-profile:end -->
 
 ## GitHub Metrics
